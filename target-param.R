@@ -1,7 +1,7 @@
 #' this file corresponds to runboot.R
 #' data-foo corresponds to dataGen
 #' helper-foo corresponds to helpers
-#' plot-target-param corresponds to plot_v2S1
+#' plot-target-param corresponds to plot_v2S1_v3
 
 ### load files and packages
 source("helper-foo.R")

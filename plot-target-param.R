@@ -1,3 +1,5 @@
+library(expm) # for sqrtm()
+
 # compute confidence interval for estimated probability parameter (p.hat)
 # of Bernoulli distribution that has been computed with rep.times
 # many repetitions.
@@ -81,6 +83,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
   B <- setup$B
   q <- setup$q
   qch <- qchisq(1 - alpha, df = q)
+  do_CF <- setup$do_CF
   do_quantile <- setup$do_quantile
   do_copula <- setup$do_copula
   probs <- setup$probs
@@ -171,7 +174,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
         tcrossprod(th_scaled) <= qch
       })
       aa
-    }, mc.cores = 12)
+    }, mc.cores = 11)
     
     # concatenate results
     res_all_new <-
@@ -297,7 +300,8 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
   my_cex <- 0.7
   my_lwd <- 0.3 
   my_lwd_small <- 0.3
-  textsize <- 10
+  textsize <- 9
+  textsize_axis <- 5
   hadjust <- 0.5
   no_lines <- 1
   
@@ -343,12 +347,13 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
             plot.background = element_rect(fill = "white", colour = "white"),
             panel.background = element_rect(fill = "white", colour = "white"),
             axis.ticks = element_line(colour = "grey70", size = 0.2),
+            axis.text = element_text(size = textsize_axis),
             panel.grid.major = element_line(colour = "grey70", size = 0.2),
             panel.grid.minor = element_line(colour = "grey70", size = 0.05),
             axis.text.x = element_text(angle = 90),
             panel.spacing = unit(no_lines, "lines"),
             strip.text.y = element_blank()) +
-      labs(color = "Method", fill = "Method",
+      labs(color = "Method", fill = "Method", 
            x = quote(n), title = "Coverage", y = NULL) #+
     #facet_wrap(~ name, ncol = 1)
   } else if (do_quantile) {
@@ -378,6 +383,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
             plot.background = element_rect(fill = "white", colour = "white"),
             panel.background = element_rect(fill = "white", colour = "white"),
             axis.ticks = element_line(colour = "grey70", size = 0.2),
+            axis.text = element_text(size = textsize_axis), 
             panel.grid.major = element_line(colour = "grey70", size = 0.2),
             panel.grid.minor = element_line(colour = "grey70", size = 0.05),
             axis.text.x = element_text(angle = 90),
@@ -415,6 +421,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
             plot.background = element_rect(fill = "white", colour = "white"),
             panel.background = element_rect(fill = "white", colour = "white"),
             axis.ticks = element_line(colour = "grey70", size = 0.2),
+            axis.text = element_text(size = textsize_axis),
             panel.grid.major = element_line(colour = "grey70", size = 0.2),
             panel.grid.minor = element_line(colour = "grey70", size = 0.05),
             axis.text.x = element_text(angle = 90),
@@ -470,6 +477,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
             plot.background = element_rect(fill = "white", colour = "white"),
             panel.background = element_rect(fill = "white", colour = "white"),
             axis.ticks = element_line(colour = "grey70", size = 0.2),
+            axis.text = element_text(size = textsize_axis),
             panel.grid.major = element_line(colour = "grey70", size = 0.2),
             panel.grid.minor = element_line(colour = "grey70", size = 0.05),
             axis.text.x = element_text(angle = 90),
@@ -482,7 +490,8 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
     dat_cov %>%
       ggplot(aes(x = xone)) +
       scale_y_continuous(trans = "log10") +
-      geom_point(aes(y = CI_len_med, col = name), cex = my_cex) +
+      #geom_line(aes(y = CI_len_med, col = name), lwd = my_lwd) + 
+      geom_point(aes(y = CI_len_med, col = name), cex = my_cex) + 
       scale_color_manual(name = name_color, values = myCol_len) +
       scale_fill_manual(name = name_color, values = myCol_len) +
       guides(colour = guide_legend(override.aes = list(alpha = 1))) +
@@ -492,6 +501,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
             plot.background = element_rect(fill = "white", colour = "white"),
             panel.background = element_rect(fill = "white", colour = "white"),
             axis.ticks = element_line(colour = "grey70", size = 0.2),
+            axis.text = element_text(size = textsize_axis),
             panel.grid.major = element_line(colour = "grey70", size = 0.2),
             panel.grid.minor = element_line(colour = "grey70", size = 0.05),
             axis.text.x = element_text(angle = 90),
@@ -506,7 +516,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
     dat_cov %>%
       ggplot(aes(x = xone)) +
       scale_y_continuous(trans = "log10") +
-      geom_line(aes(y = CI_len_med, col = name), lwd = my_lwd) +
+      geom_line(aes(y = CI_len_med, col = name), lwd = my_lwd) + 
       geom_point(aes(y = CI_len_med, col = name), cex = my_cex) + 
       scale_color_manual(name = name_color, values = myCol_len) +
       scale_fill_manual(name = name_color, values = myCol_len) +
@@ -517,6 +527,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
             plot.background = element_rect(fill = "white", colour = "white"),
             panel.background = element_rect(fill = "white", colour = "white"),
             axis.ticks = element_line(colour = "grey70", size = 0.2),
+            axis.text = element_text(size = textsize_axis),
             panel.grid.major = element_line(colour = "grey70", size = 0.2),
             panel.grid.minor = element_line(colour = "grey70", size = 0.05),
             axis.text.x = element_text(angle = 90),
@@ -525,7 +536,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
       labs(color = name_color, fill = name_color, 
            x = quote(x[1]), title = "Log median CI length", y = NULL)  
   }
- 
+  
   p_bias <- if (!do_quantile & !do_copula) {
     dat_cov %>%
       ggplot(aes(x = n)) +
@@ -541,6 +552,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
             plot.background = element_rect(fill = "white", colour = "white"),
             panel.background = element_rect(fill = "white", colour = "white"),
             axis.ticks = element_line(colour = "grey70", size = 0.2),
+            axis.text = element_text(size = textsize_axis),
             panel.grid.major = element_line(colour = "grey70", size = 0.2),
             panel.grid.minor = element_line(colour = "grey70", size = 0.05),
             axis.text.x = element_text(angle = 90),
@@ -564,6 +576,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
             plot.background = element_rect(fill = "white", colour = "white"),
             panel.background = element_rect(fill = "white", colour = "white"),
             axis.ticks = element_line(colour = "grey70", size = 0.2),
+            axis.text = element_text(size = textsize_axis),
             panel.grid.major = element_line(colour = "grey70", size = 0.2),
             panel.grid.minor = element_line(colour = "grey70", size = 0.05),
             axis.text.x = element_text(angle = 90),
@@ -575,14 +588,14 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
       geom_line(data = dat_problematic, aes(y = bias_med, col = name), lwd = my_lwd) +
       geom_line(data = dat_high, aes(y = bias_med, col = name), lwd = my_lwd)  + 
       scale_y_continuous(trans = squash_axis(0.2, 0.6, 10), 
-                         breaks = bb, labels = bb#,
+                         breaks = bb, labels = bb
       ) #+ 
     #facet_wrap(~ n, ncol = 1)
   } else if (do_copula) {
     dat_cov %>%
       ggplot(aes(x = xone)) +
       geom_hline(aes(yintercept = 0), lwd = my_lwd_small, lty = 2) +
-      geom_line(aes(y = bias_med, col = name), lwd = my_lwd) +
+      geom_line(aes(y = bias_med, col = name), lwd = my_lwd) + 
       geom_point(aes(y = bias_med, col = name), cex = my_cex) + 
       scale_color_manual(name = name_color, values = myColors) +
       scale_fill_manual(name = name_color, values = myColors) +
@@ -593,6 +606,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
             plot.background = element_rect(fill = "white", colour = "white"),
             panel.background = element_rect(fill = "white", colour = "white"),
             axis.ticks = element_line(colour = "grey70", size = 0.2),
+            axis.text = element_text(size = textsize_axis),
             panel.grid.major = element_line(colour = "grey70", size = 0.2),
             panel.grid.minor = element_line(colour = "grey70", size = 0.05),
             axis.text.x = element_text(angle = 90),
@@ -607,7 +621,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
               legend = "right")
   p_final
   
-  ggsave("coverage.pdf", width = 6, height = 3)
+  ggsave("coverage.pdf", width = 6, height = 2)
   
   # plot point estimators
   if (do_quantile | do_copula) {
@@ -625,7 +639,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
     }
     pp
     
-    ggsave("estimated_params.pdf", width = 6, height = 4)
+    ggsave("estimated_params.pdf", width = 6, height = 2)
   }
   
   # plot ellipse information
@@ -658,10 +672,10 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
     dat_ell %>%
       group_by(n) %>%
       ggplot(aes(x = n)) +
-      geom_ribbon(aes(ymin = CI_cov_low_ell, ymax = CI_cov_upp_ell, fill = method), alpha = my_alpha) + #, pch = power_foo+
+      geom_ribbon(aes(ymin = CI_cov_low_ell, ymax = CI_cov_upp_ell, fill = method), alpha = my_alpha) + 
       geom_hline(aes(yintercept = 1 - alpha), lwd = my_lwd_small, lty = 2) +
-      geom_line(aes(y = cover.ell, col = method), lwd = my_lwd) + # , lty = power_foo
-      geom_jitter(aes(y = cover.ell, col = method), cex = my_cex, width = 0.00, height = 0.00) + #, pch = power_foo
+      geom_line(aes(y = cover.ell, col = method), lwd = my_lwd) + 
+      geom_jitter(aes(y = cover.ell, col = method), cex = my_cex, width = 0.00, height = 0.00) + 
       scale_colour_manual(name = "Method", values = myColors) +
       scale_fill_manual(name = "Method", values = myColors) +
       guides(colour = guide_legend(override.aes = list(alpha = 1))) +
@@ -671,6 +685,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
             plot.background = element_rect(fill = "white", colour = "white"),
             panel.background = element_rect(fill = "white", colour = "white"),
             axis.ticks = element_line(colour = "grey70", size = 0.2),
+            axis.text = element_text(size = textsize_axis),
             panel.grid.major = element_line(colour = "grey70", size = 0.2),
             panel.grid.minor = element_line(colour = "grey70", size = 0.05),
             axis.text.x = element_text(angle = 90),
@@ -686,7 +701,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
       group_by(n) %>%
       ggplot(aes(x = xone)) +
       geom_hline(aes(yintercept = 1 - alpha), lwd = my_lwd_small, lty = 2) +
-      geom_jitter(aes(y = cover.ell), cex = my_cex, width = 0.00, height = 0.00) +
+      geom_jitter(aes(y = cover.ell), cex = my_cex, width = 0.00, height = 0.00) + 
       scale_colour_manual(name = name_color, values = myColors) +
       scale_fill_manual(name = name_color, values = myColors) +
       guides(colour = guide_legend(override.aes = list(alpha = 1))) +
@@ -696,6 +711,7 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
             plot.background = element_rect(fill = "white", colour = "white"),
             panel.background = element_rect(fill = "white", colour = "white"),
             axis.ticks = element_line(colour = "grey70", size = 0.2),
+            axis.text = element_text(size = textsize_axis),
             panel.grid.major = element_line(colour = "grey70", size = 0.2),
             panel.grid.minor = element_line(colour = "grey70", size = 0.05),
             axis.text.x = element_text(angle = 90),
@@ -715,5 +731,5 @@ do_plots <- function(alpha = 0.05, n_vec = NULL, do_copula = FALSE,
       geom_ribbon(data = dat_high, aes(ymin = CI_cov_low_ell, ymax = CI_cov_upp_ell), alpha = my_alpha)
   }
   
-  ggsave(filename = "coverage-ellipse.pdf", width = 5, height = 3)
+  ggsave(filename = "coverage-ellipse.pdf", width = 4, height = 1.5)
 }
