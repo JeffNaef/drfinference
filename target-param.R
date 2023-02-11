@@ -220,7 +220,7 @@ for (n in n_vec) {
     # causal forest
     if (do_CF) {
       CF_fit <- causal_forest(X = data$X, Y = data$Y[, 1], W = data$Y[, 2], 
-                              num.trees = min(B * num.trees, 1000), 
+                              num.trees = min(B * num.trees, 50000), 
                               sample.fraction = 1 - beta)
       CF_predict <- predict(CF_fit, x, estimate.variance = TRUE) #computes CATE
       CATE_CF <- CF_predict[, "predictions"]
