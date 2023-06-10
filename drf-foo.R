@@ -15,8 +15,7 @@ drfCI <- function(X, Y, B, sampling = "binomial", ...) {
 
     ## Using normal Bootstrap on the data and refitting DRF
     DRFb <-
-      drfown(X = X[indexb, , drop = F], Y = Y[indexb, , drop = F],
-          ci.group.size = 1, ...)
+      drfown(X = X[indexb, , drop = F], Y = Y[indexb, , drop = F], ...)
 
 
     return(list(DRF = DRFb, indices = indexb))
@@ -184,10 +183,10 @@ drfown <-               function(X, Y,
   
   if (splitting.rule == "CART") {
     ##forest <- do.call(gini_train, c(data, args))
-    forest <- do.call.rcpp(drf:::gini_train, c(data, args))
+    forest <- drf:::do.call.rcpp(drf:::gini_train, c(data, args))
     ##forest <- do.call(gini_train, c(data, args))
   } else if (splitting.rule == "FourierMMD") {
-    forest <- do.call.rcpp(drf:::fourier_train, c(data, args))
+    forest <- drf:::do.call.rcpp(drf:::fourier_train, c(data, args))
   } else {
     stop("splitting rule not available.")
   }
